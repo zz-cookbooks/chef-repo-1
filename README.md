@@ -64,3 +64,8 @@ Next Steps
 ==========
 
 Read the README file in each of the subdirectories for more information about what goes in those directories.
+
+References
+==========
+
+- http://wiki.opscode.com/display/chef/Chef+Repository
