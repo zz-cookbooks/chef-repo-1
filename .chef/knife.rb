@@ -1,19 +1,22 @@
-current_dir = File.dirname(__FILE__)
+require 'pathname'
+current = Pathname(__FILE__)
+current_dir = current.dirname
 user = ENV['CHEF_USER'] || ENV['OPSCODE_USER'] || ENV['USER'] || `whoami`
-org = ENV['CHEF_ORGNAME'] || 'Private'
-email =  ENV['CHEF_EMAIL'] || "#{user}@mailinator.com"
-log_path = "#{current_dir}/../log"
+org = ENV['CHEF_ORG'] || ENV['OPSCODE_ORG'] || 'chef'
+email =  ENV['CHEF_EMAIL'] || ENV['OPSCODE_EMAIL'] || "#{user}@mailinator.com"
+log_path = current_dir + '..' + 'log'
+log_file = log_path + "client_#{node}.log"
 
 node_name                user
 log_level                :info
-log_location             "#{log_path}/client_#{node_name}.log"
+log_location             log_file.to_s
 verbose_logging          true
 client_key               "#{ENV['HOME']}/.chef/#{user}.pem"
 validation_client_name   "#{org}-validator"
 validation_key           "#{ENV['HOME']}/.chef/#{org}-validator.pem"
 chef_server_url          ENV['CHEF_URL']||"https://api.opscode.com/organizations/#{org}"
 cache_type               'BasicFile'
-cache_options            :path => "#{log_path}/checksums"
+cache_options            :path => (log_path + 'checksums').to_s
 cookbook_path            ["#{current_dir}/../cookbooks", "#{current_dir}/../site-cookbooks"]
 cookbook_copyright       user
 cookbook_license         "apachev2"
