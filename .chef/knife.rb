@@ -2,19 +2,22 @@ require 'pathname'
 current = Pathname(__FILE__)
 current_dir = current.dirname
 user = ENV['CHEF_USER'] || ENV['OPSCODE_USER'] || ENV['USER'] || `whoami`
+ckey = ENV['CHEF_USER'] ? "#{current_dir}/#{user}.pem" : "#{ENV['HOME']}/.chef/#{user}.pem"
 org = ENV['CHEF_ORG'] || ENV['OPSCODE_ORG'] || 'chef'
+vkey = ENV['CHEF_USER'] ? "#{current_dir}/#{org}-validator.pem" : "#{ENV['HOME']}/.chef/#{org}-validator.pem"
+org_url = ENV['CHEF_USER'] ? "http://localhost:4000" : "https://api.opscode.com/organizations/#{org}"
 email =  ENV['CHEF_EMAIL'] || ENV['OPSCODE_EMAIL'] || "#{user}@mailinator.com"
 log_path = current_dir + '..' + 'log'
 log_file = log_path + "client_#{node}.log"
 
 node_name                user
-log_level                :info
+log_level                :debug
 log_location             log_file.to_s
 verbose_logging          true
-client_key               "#{ENV['HOME']}/.chef/#{user}.pem"
+client_key               ckey
 validation_client_name   "#{org}-validator"
-validation_key           "#{ENV['HOME']}/.chef/#{org}-validator.pem"
-chef_server_url          ENV['CHEF_URL']||"https://api.opscode.com/organizations/#{org}"
+validation_key           vkey
+chef_server_url          org_url
 cache_type               'BasicFile'
 cache_options            :path => (log_path + 'checksums').to_s
 cookbook_path            ["#{current_dir}/../cookbooks", "#{current_dir}/../site-cookbooks"]
